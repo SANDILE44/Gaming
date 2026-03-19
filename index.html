@@ -83,11 +83,52 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Player
-const ninja = new THREE.Mesh(
-  new THREE.BoxGeometry(1,1,1),
-  new THREE.MeshBasicMaterial({ color: 0x00ffcc })
+// Create ninja group
+const ninja = new THREE.Group();
+
+// Body
+const body = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1.5, 0.5),
+  new THREE.MeshBasicMaterial({ color: 0x111111 })
 );
+ninja.add(body);
+
+// Head
+const head = new THREE.Mesh(
+  new THREE.BoxGeometry(0.7, 0.7, 0.7),
+  new THREE.MeshBasicMaterial({ color: 0x000000 })
+);
+head.position.y = 1.2;
+ninja.add(head);
+
+// Left Arm
+const leftArm = new THREE.Mesh(
+  new THREE.BoxGeometry(0.3, 1, 0.3),
+  new THREE.MeshBasicMaterial({ color: 0x111111 })
+);
+leftArm.position.x = -0.8;
+ninja.add(leftArm);
+
+// Right Arm
+const rightArm = new THREE.Mesh(
+  new THREE.BoxGeometry(0.3, 1, 0.3),
+  new THREE.MeshBasicMaterial({ color: 0x111111 })
+);
+rightArm.position.x = 0.8;
+ninja.add(rightArm);
+
+// Legs
+const leg1 = new THREE.Mesh(
+  new THREE.BoxGeometry(0.4, 1, 0.4),
+  new THREE.MeshBasicMaterial({ color: 0x111111 })
+);
+leg1.position.set(-0.3, -1, 0);
+ninja.add(leg1);
+
+const leg2 = leg1.clone();
+leg2.position.x = 0.3;
+ninja.add(leg2);
+
 scene.add(ninja);
 
 // Enemy
