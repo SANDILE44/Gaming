@@ -1,63 +1,149 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0; overflow:hidden;">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { margin:0; overflow:hidden; background:black; }
 
-<div class="character">
+/* Controls */
+.controls {
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  padding:0 20px;
+}
 
-  <div class="head">
-    <div class="eye left"></div>
-    <div class="eye right"></div>
+.dpad {
+  display:grid;
+  grid-template-columns:60px 60px 60px;
+  grid-template-rows:60px 60px 60px;
+  gap:5px;
+}
+
+.btn {
+  background:rgba(255,255,255,0.2);
+  border:none;
+  color:white;
+  font-size:20px;
+  border-radius:10px;
+}
+
+.attack {
+  width:80px;
+  height:80px;
+  font-size:18px;
+  background:rgba(255,0,0,0.5);
+}
+</style>
+</head>
+
+<body>
+
+<div class="controls">
+  <!-- D-Pad -->
+  <div class="dpad">
+    <div></div>
+    <button class="btn" ontouchstart="keys.up=true" ontouchend="keys.up=false">⬆️</button>
+    <div></div>
+
+    <button class="btn" ontouchstart="keys.left=true" ontouchend="keys.left=false">⬅️</button>
+    <div></div>
+    <button class="btn" ontouchstart="keys.right=true" ontouchend="keys.right=false">➡️</button>
+
+    <div></div>
+    <button class="btn" ontouchstart="keys.down=true" ontouchend="keys.down=false">⬇️</button>
+    <div></div>
   </div>
 
-  <div class="body"></div>
-
-  <div class="arms">
-    <div class="arm left"></div>
-    <div class="arm right"></div>
-  </div>
-
-  <div class="legs">
-    <div class="leg left"></div>
-    <div class="leg right"></div>
-  </div>
-
-</div>
-
-<!-- Buttons -->
-<div style="position:absolute; bottom:20px; left:20px; display:grid; gap:10px;">
-  <button ontouchstart="keys.left=true" ontouchend="keys.left=false">⬅️</button>
-  <button ontouchstart="keys.right=true" ontouchend="keys.right=false">➡️</button>
-  <button ontouchstart="keys.up=true" ontouchend="keys.up=false">⬆️</button>
-  <button ontouchstart="keys.down=true" ontouchend="keys.down=false">⬇️</button>
-</div>
-
-<div style="position:absolute; bottom:20px; right:20px;">
-  <button ontouchstart="attack()">👊 Attack</button>
+  <!-- Attack -->
+  <button class="btn attack" ontouchstart="attack()">👊</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
-const character = document.querySelector(".character");
+// Scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
 
-let x = 0;
-let y = 0;
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  1000
+);
 
-let keys = { left:false, right:false, up:false, down:false };
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-// Movement loop
-function animate(){
+// Player
+const ninja = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({ color: 0x00ffcc })
+);
+scene.add(ninja);
+
+// Enemy
+const enemy = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({ color: 0xff3333 })
+);
+enemy.position.x = 2;
+scene.add(enemy);
+
+camera.position.z = 5;
+
+// Controls
+let keys = { up:false, down:false, left:false, right:false };
+let isAttacking = false;
+let enemyHealth = 5;
+
+function attack() {
+  isAttacking = true;
+  setTimeout(() => isAttacking = false, 200);
+}
+
+// Loop
+function animate() {
   requestAnimationFrame(animate);
 
-  if(keys.left) x -= 3;
-  if(keys.right) x += 3;
-  if(keys.up) y -= 3;
-  if(keys.down) y += 3;
+  // Movement
+  if (keys.left) ninja.position.x -= 0.06;
+  if (keys.right) ninja.position.x += 0.06;
+  if (keys.up) ninja.position.y += 0.06;
+  if (keys.down) ninja.position.y -= 0.06;
 
-  character.style.transform = `translate(${x}px, ${y}px)`;
+  // Attack animation
+  ninja.scale.x = isAttacking ? 1.5 : 1;
+
+  // Hit detection
+  const distance = ninja.position.distanceTo(enemy.position);
+
+  if (isAttacking && distance < 1.5 && enemyHealth > 0) {
+    enemyHealth--;
+    enemy.position.x += 0.3;
+    isAttacking = false;
+  }
+
+  if (enemyHealth <= 0) {
+    scene.remove(enemy);
+  }
+
+  renderer.render(scene, camera);
 }
 
 animate();
+
+// Fix resize
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 </script>
+
 </body>
 </html>
