@@ -1,0 +1,98 @@
+body{
+background:#020617;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+/* CHARACTER CONTAINER */
+
+.character{
+position:relative;
+width:120px;
+}
+
+/* HEAD */
+
+.head{
+width:70px;
+height:70px;
+background:#0f172a;
+border:2px solid #334155;
+border-radius:12px;
+margin:0 auto;
+position:relative;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:10px;
+}
+
+/* EYES */
+
+.eye{
+width:10px;
+height:10px;
+background:#00b4d8;
+border-radius:50%;
+box-shadow:0 0 8px #00b4d8;
+}
+
+/* BODY */
+
+.body{
+width:80px;
+height:90px;
+background:#0f172a;
+border:2px solid #334155;
+border-radius:12px;
+margin:10px auto;
+}
+
+/* ARMS */
+
+.arms{
+position:absolute;
+top:80px;
+width:100%;
+}
+
+.arm{
+width:16px;
+height:70px;
+background:#0f172a;
+border:2px solid #334155;
+border-radius:10px;
+position:absolute;
+}
+
+.arm.left{
+left:-18px;
+}
+
+.arm.right{
+right:-18px;
+}
+
+/* LEGS */
+
+.legs{
+display:flex;
+justify-content:center;
+gap:12px;
+}
+
+.leg{
+width:18px;
+height:70px;
+background:#0f172a;
+border:2px solid #334155;
+border-radius:10px;
+}
+
+/* SUBTLE GLOW (ALIVE FEEL) */
+
+.character:hover .eye{
+box-shadow:0 0 15px #00b4d8;
+}
