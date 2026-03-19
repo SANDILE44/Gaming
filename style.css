@@ -1,17 +1,21 @@
-/* Reset */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* BODY */
 body {
   overflow: hidden;
-  background: black;
+  background: #000;
   font-family: Arial, sans-serif;
+  touch-action: none;
 }
 
-/* Controls container */
+/* =========================
+   CONTROLS CONTAINER
+========================= */
 .controls {
   position: fixed;
   bottom: 20px;
@@ -22,7 +26,9 @@ body {
   pointer-events: none;
 }
 
-/* D-pad layout */
+/* =========================
+   D-PAD
+========================= */
 .dpad {
   display: grid;
   grid-template-columns: 70px 70px 70px;
@@ -31,46 +37,55 @@ body {
   pointer-events: auto;
 }
 
-/* Buttons */
+/* =========================
+   BUTTON BASE
+========================= */
 .btn {
   background: rgba(255, 255, 255, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
   font-size: 22px;
   border-radius: 15px;
-  backdrop-filter: blur(5px);
-  transition: all 0.1s ease;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: transform 0.08s ease, background 0.1s ease;
 }
 
-/* Button press effect */
+/* PRESS EFFECT */
 .btn:active {
   transform: scale(0.9);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.35);
 }
 
-/* Attack button */
+/* =========================
+   ATTACK BUTTON
+========================= */
 .attack {
-  width: 90px;
-  height: 90px;
-  font-size: 20px;
-  background: rgba(255, 50, 50, 0.6);
-  border: 2px solid rgba(255, 100, 100, 0.8);
+  width: 95px;
+  height: 95px;
+  font-size: 22px;
+  background: rgba(255, 50, 50, 0.65);
+  border: 2px solid rgba(255, 100, 100, 0.9);
   pointer-events: auto;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
 }
 
-/* Attack press effect */
+/* ATTACK PRESS */
 .attack:active {
   transform: scale(0.85);
-  background: rgba(255, 0, 0, 0.8);
+  background: rgba(255, 0, 0, 0.9);
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.9);
 }
 
-/* Optional: health bar */
+/* =========================
+   OPTIONAL: HEALTH BAR
+========================= */
 .health-bar {
   position: fixed;
   top: 20px;
   left: 20px;
   width: 200px;
-  height: 20px;
+  height: 18px;
   background: rgba(255,255,255,0.2);
   border-radius: 10px;
   overflow: hidden;
@@ -80,5 +95,26 @@ body {
   height: 100%;
   width: 100%;
   background: lime;
-  transition: width 0.2s;
+  transition: width 0.2s ease;
+}
+
+/* =========================
+   OPTIONAL: ENEMY HEALTH
+========================= */
+.enemy-health {
+  position: fixed;
+  top: 50px;
+  left: 20px;
+  width: 200px;
+  height: 18px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.enemy-fill {
+  height: 100%;
+  width: 100%;
+  background: red;
+  transition: width 0.2s ease;
 }
