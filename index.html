@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0">
+<body style="margin:0; overflow:hidden;">
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x222222); // dark grey so it's not pure black
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Ninja (just a cube for now)
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+// Ninja (cube)
+const geometry = new THREE.BoxGeometry(1,1,1);
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // make it green so you SEE it
 const ninja = new THREE.Mesh(geometry, material);
 scene.add(ninja);
 
+// IMPORTANT: camera position
 camera.position.z = 5;
 
 // Controls
 let keys = {};
-
-document.addEventListener("keydown", (e) => keys[e.key] = true);
-document.addEventListener("keyup", (e) => keys[e.key] = false);
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
 
 function animate() {
   requestAnimationFrame(animate);
