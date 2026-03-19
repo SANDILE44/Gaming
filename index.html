@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html>
 <body style="margin:0; overflow:hidden;">
+
+<!-- Buttons -->
+<div style="position:absolute; bottom:20px; left:20px;">
+  <button ontouchstart="keys.left=true" ontouchend="keys.left=false">⬅️</button>
+  <button ontouchstart="keys.right=true" ontouchend="keys.right=false">➡️</button>
+  <button ontouchstart="keys.up=true" ontouchend="keys.up=false">⬆️</button>
+  <button ontouchstart="keys.down=true" ontouchend="keys.down=false">⬇️</button>
+</div>
+
+<div style="position:absolute; bottom:20px; right:20px;">
+  <button ontouchstart="attack()">👊 Attack</button>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
-// Scene setup
+// Scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x222222);
 
 const camera = new THREE.PerspectiveCamera(
   75,
-  window.innerWidth / window.innerHeight,
+  window.innerWidth/window.innerHeight,
   0.1,
   1000
 );
@@ -19,74 +32,55 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Player (Ninja)
-const geometry = new THREE.BoxGeometry(1,1,1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const ninja = new THREE.Mesh(geometry, material);
+// Player
+const ninja = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+);
 scene.add(ninja);
 
 // Enemy
-const enemyGeometry = new THREE.BoxGeometry(1,1,1);
-const enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+const enemy = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({ color: 0xff0000 })
+);
 enemy.position.x = 2;
 scene.add(enemy);
 
-// Camera position
 camera.position.z = 5;
 
 // Controls
-let keys = {};
+let keys = { left:false, right:false, up:false, down:false };
 let isAttacking = false;
 let enemyHealth = 5;
 
-document.addEventListener("keydown", (e) => {
-  keys[e.key] = true;
+function attack() {
+  isAttacking = true;
+  setTimeout(() => isAttacking = false, 200);
+}
 
-  if (e.code === "Space") {
-    isAttacking = true;
-
-    setTimeout(() => {
-      isAttacking = false;
-    }, 200);
-  }
-});
-
-document.addEventListener("keyup", (e) => {
-  keys[e.key] = false;
-});
-
-// Game loop
+// Loop
 function animate() {
   requestAnimationFrame(animate);
 
   // Movement
-  if (keys["ArrowLeft"]) ninja.position.x -= 0.05;
-  if (keys["ArrowRight"]) ninja.position.x += 0.05;
-  if (keys["ArrowUp"]) ninja.position.y += 0.05;
-  if (keys["ArrowDown"]) ninja.position.y -= 0.05;
+  if (keys.left) ninja.position.x -= 0.05;
+  if (keys.right) ninja.position.x += 0.05;
+  if (keys.up) ninja.position.y += 0.05;
+  if (keys.down) ninja.position.y -= 0.05;
 
   // Attack animation
-  if (isAttacking) {
-    ninja.scale.x = 1.5;
-  } else {
-    ninja.scale.x = 1;
-  }
+  ninja.scale.x = isAttacking ? 1.5 : 1;
 
   // Hit detection
   const distance = ninja.position.distanceTo(enemy.position);
 
   if (isAttacking && distance < 1.5 && enemyHealth > 0) {
     enemyHealth--;
-    console.log("Enemy hit! Health:", enemyHealth);
-
-    // Knockback
     enemy.position.x += 0.3;
-
     isAttacking = false;
   }
 
-  // Enemy death
   if (enemyHealth <= 0) {
     scene.remove(enemy);
   }
@@ -96,5 +90,6 @@ function animate() {
 
 animate();
 </script>
+
 </body>
 </html>
