@@ -1,101 +1,149 @@
-body{
-background:#020617;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { margin:0; overflow:hidden; background:black; }
+
+/* Controls */
+.controls {
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  padding:0 20px;
 }
 
-/* CHARACTER CONTAINER */
-
-.character{
-position:absolute;
-top:40%;
-left:40%;
-width:120px;
-transition:transform 0.05s linear;
+.dpad {
+  display:grid;
+  grid-template-columns:60px 60px 60px;
+  grid-template-rows:60px 60px 60px;
+  gap:5px;
 }
 
-/* HEAD */
-
-.head{
-width:70px;
-height:70px;
-background:#0f172a;
-border:2px solid #334155;
-border-radius:12px;
-margin:0 auto;
-position:relative;
-display:flex;
-justify-content:center;
-align-items:center;
-gap:10px;
+.btn {
+  background:rgba(255,255,255,0.2);
+  border:none;
+  color:white;
+  font-size:20px;
+  border-radius:10px;
 }
 
-/* EYES */
+.attack {
+  width:80px;
+  height:80px;
+  font-size:18px;
+  background:rgba(255,0,0,0.5);
+}
+</style>
+</head>
 
-.eye{
-width:10px;
-height:10px;
-background:#00b4d8;
-border-radius:50%;
-box-shadow:0 0 8px #00b4d8;
+<body>
+
+<div class="controls">
+  <!-- D-Pad -->
+  <div class="dpad">
+    <div></div>
+    <button class="btn" ontouchstart="keys.up=true" ontouchend="keys.up=false">⬆️</button>
+    <div></div>
+
+    <button class="btn" ontouchstart="keys.left=true" ontouchend="keys.left=false">⬅️</button>
+    <div></div>
+    <button class="btn" ontouchstart="keys.right=true" ontouchend="keys.right=false">➡️</button>
+
+    <div></div>
+    <button class="btn" ontouchstart="keys.down=true" ontouchend="keys.down=false">⬇️</button>
+    <div></div>
+  </div>
+
+  <!-- Attack -->
+  <button class="btn attack" ontouchstart="attack()">👊</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
+<script>
+// Scene
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x111111);
+
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  1000
+);
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Player
+const ninja = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({ color: 0x00ffcc })
+);
+scene.add(ninja);
+
+// Enemy
+const enemy = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({ color: 0xff3333 })
+);
+enemy.position.x = 2;
+scene.add(enemy);
+
+camera.position.z = 5;
+
+// Controls
+let keys = { up:false, down:false, left:false, right:false };
+let isAttacking = false;
+let enemyHealth = 5;
+
+function attack() {
+  isAttacking = true;
+  setTimeout(() => isAttacking = false, 200);
 }
 
-/* BODY */
+// Loop
+function animate() {
+  requestAnimationFrame(animate);
 
-.body{
-width:80px;
-height:90px;
-background:#0f172a;
-border:2px solid #334155;
-border-radius:12px;
-margin:10px auto;
+  // Movement
+  if (keys.left) ninja.position.x -= 0.06;
+  if (keys.right) ninja.position.x += 0.06;
+  if (keys.up) ninja.position.y += 0.06;
+  if (keys.down) ninja.position.y -= 0.06;
+
+  // Attack animation
+  ninja.scale.x = isAttacking ? 1.5 : 1;
+
+  // Hit detection
+  const distance = ninja.position.distanceTo(enemy.position);
+
+  if (isAttacking && distance < 1.5 && enemyHealth > 0) {
+    enemyHealth--;
+    enemy.position.x += 0.3;
+    isAttacking = false;
+  }
+
+  if (enemyHealth <= 0) {
+    scene.remove(enemy);
+  }
+
+  renderer.render(scene, camera);
 }
 
-/* ARMS */
+animate();
 
-.arms{
-position:absolute;
-top:80px;
-width:100%;
-}
+// Fix resize
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
 
-.arm{
-width:16px;
-height:70px;
-background:#0f172a;
-border:2px solid #334155;
-border-radius:10px;
-position:absolute;
-}
-
-.arm.left{
-left:-18px;
-}
-
-.arm.right{
-right:-18px;
-}
-
-/* LEGS */
-
-.legs{
-display:flex;
-justify-content:center;
-gap:12px;
-}
-
-.leg{
-width:18px;
-height:70px;
-background:#0f172a;
-border:2px solid #334155;
-border-radius:10px;
-}
-
-/* SUBTLE GLOW (ALIVE FEEL) */
-
-.character:hover .eye{
-box-shadow:0 0 15px #00b4d8;
-}
+</body>
+</html>
