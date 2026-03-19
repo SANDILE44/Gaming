@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>3D Cube</title>
-</head>
-<body>
+<body style="margin:0">
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+
 <script>
 const scene = new THREE.Scene();
 
@@ -13,17 +11,29 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Ninja (just a cube for now)
 const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
+const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+const ninja = new THREE.Mesh(geometry, material);
+scene.add(ninja);
 
-scene.add(cube);
 camera.position.z = 5;
+
+// Controls
+let keys = {};
+
+document.addEventListener("keydown", (e) => keys[e.key] = true);
+document.addEventListener("keyup", (e) => keys[e.key] = false);
 
 function animate() {
   requestAnimationFrame(animate);
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+
+  // Movement
+  if (keys["ArrowLeft"]) ninja.position.x -= 0.05;
+  if (keys["ArrowRight"]) ninja.position.x += 0.05;
+  if (keys["ArrowUp"]) ninja.position.y += 0.05;
+  if (keys["ArrowDown"]) ninja.position.y -= 0.05;
+
   renderer.render(scene, camera);
 }
 
