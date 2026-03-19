@@ -24,7 +24,7 @@
 </div>
 
 <!-- Buttons -->
-<div style="position:absolute; bottom:20px; left:20px;">
+<div style="position:absolute; bottom:20px; left:20px; display:grid; gap:10px;">
   <button ontouchstart="keys.left=true" ontouchend="keys.left=false">⬅️</button>
   <button ontouchstart="keys.right=true" ontouchend="keys.right=false">➡️</button>
   <button ontouchstart="keys.up=true" ontouchend="keys.up=false">⬆️</button>
@@ -38,79 +38,26 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
-// Scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x222222);
+const character = document.querySelector(".character");
 
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  1000
-);
+let x = 0;
+let y = 0;
 
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-// Player
-const ninja = new THREE.Mesh(
-  new THREE.BoxGeometry(1,1,1),
-  new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-);
-scene.add(ninja);
-
-// Enemy
-const enemy = new THREE.Mesh(
-  new THREE.BoxGeometry(1,1,1),
-  new THREE.MeshBasicMaterial({ color: 0xff0000 })
-);
-enemy.position.x = 2;
-scene.add(enemy);
-
-camera.position.z = 5;
-
-// Controls
 let keys = { left:false, right:false, up:false, down:false };
-let isAttacking = false;
-let enemyHealth = 5;
 
-function attack() {
-  isAttacking = true;
-  setTimeout(() => isAttacking = false, 200);
-}
-
-// Loop
-function animate() {
+// Movement loop
+function animate(){
   requestAnimationFrame(animate);
 
-  // Movement
-  if (keys.left) ninja.position.x -= 0.05;
-  if (keys.right) ninja.position.x += 0.05;
-  if (keys.up) ninja.position.y += 0.05;
-  if (keys.down) ninja.position.y -= 0.05;
+  if(keys.left) x -= 3;
+  if(keys.right) x += 3;
+  if(keys.up) y -= 3;
+  if(keys.down) y += 3;
 
-  // Attack animation
-  ninja.scale.x = isAttacking ? 1.5 : 1;
-
-  // Hit detection
-  const distance = ninja.position.distanceTo(enemy.position);
-
-  if (isAttacking && distance < 1.5 && enemyHealth > 0) {
-    enemyHealth--;
-    enemy.position.x += 0.3;
-    isAttacking = false;
-  }
-
-  if (enemyHealth <= 0) {
-    scene.remove(enemy);
-  }
-
-  renderer.render(scene, camera);
+  character.style.transform = `translate(${x}px, ${y}px)`;
 }
 
 animate();
 </script>
-
 </body>
 </html>
