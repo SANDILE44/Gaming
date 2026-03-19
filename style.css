@@ -9,8 +9,11 @@ height:100vh;
 /* CHARACTER CONTAINER */
 
 .character{
-position:relative;
+position:absolute;
+top:40%;
+left:40%;
 width:120px;
+transition:transform 0.05s linear;
 }
 
 /* HEAD */
