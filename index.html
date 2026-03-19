@@ -4,8 +4,9 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 
 <script>
+// Scene setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x222222); // dark grey so it's not pure black
+scene.background = new THREE.Color(0x222222);
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -18,20 +19,44 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Ninja (cube)
+// Player (Ninja)
 const geometry = new THREE.BoxGeometry(1,1,1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // make it green so you SEE it
+const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const ninja = new THREE.Mesh(geometry, material);
 scene.add(ninja);
 
-// IMPORTANT: camera position
+// Enemy
+const enemyGeometry = new THREE.BoxGeometry(1,1,1);
+const enemyMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+enemy.position.x = 2;
+scene.add(enemy);
+
+// Camera position
 camera.position.z = 5;
 
 // Controls
 let keys = {};
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
+let isAttacking = false;
+let enemyHealth = 5;
 
+document.addEventListener("keydown", (e) => {
+  keys[e.key] = true;
+
+  if (e.code === "Space") {
+    isAttacking = true;
+
+    setTimeout(() => {
+      isAttacking = false;
+    }, 200);
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  keys[e.key] = false;
+});
+
+// Game loop
 function animate() {
   requestAnimationFrame(animate);
 
@@ -40,6 +65,31 @@ function animate() {
   if (keys["ArrowRight"]) ninja.position.x += 0.05;
   if (keys["ArrowUp"]) ninja.position.y += 0.05;
   if (keys["ArrowDown"]) ninja.position.y -= 0.05;
+
+  // Attack animation
+  if (isAttacking) {
+    ninja.scale.x = 1.5;
+  } else {
+    ninja.scale.x = 1;
+  }
+
+  // Hit detection
+  const distance = ninja.position.distanceTo(enemy.position);
+
+  if (isAttacking && distance < 1.5 && enemyHealth > 0) {
+    enemyHealth--;
+    console.log("Enemy hit! Health:", enemyHealth);
+
+    // Knockback
+    enemy.position.x += 0.3;
+
+    isAttacking = false;
+  }
+
+  // Enemy death
+  if (enemyHealth <= 0) {
+    scene.remove(enemy);
+  }
 
   renderer.render(scene, camera);
 }
